@@ -1,20 +1,25 @@
 {
   "name": "react-boost-system",
-  "version": "1.0.0",
-  "description": "Real Facebook Reaction Booster - Mobile Responsive",
+  "version": "2.0.0",
+  "description": "Real Facebook Reaction Booster - Updated Dependencies",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "test": "node test.js"
   },
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5",
-    "puppeteer": "^21.0.0",
+    "puppeteer": "^24.0.0",
     "puppeteer-extra": "^3.3.6",
-    "puppeteer-extra-plugin-stealth": "^2.11.2"
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "nodemon": "^3.0.2"
   },
   "engines": {
-    "node": ">=16.0.0"
-  }
+    "node": ">=18.0.0"
+  },
+  "keywords": ["facebook", "react", "automation", "puppeteer"],
+  "author": "React Boost System",
+  "license": "MIT"
 }
