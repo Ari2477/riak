@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>React Boost Pro - Real Facebook Reactions</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1877f2;
+            --primary-dark: #166fe5;
+            --secondary: #42b72a;
+            --danger: #f02849;
+            --warning: #f7b928;
+            --dark: #1c1e21;
+            --light: #f0f2f5;
+            --gray: #65676b;
+            --border: #dddfe2;
+            --card-bg: #ffffff;
+            --shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 0;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 100%;
+            padding: 16px;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 24px 16px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border-radius: 0 0 20px 20px;
+            margin: -16px -16px 24px -16px;
+            box-shadow: 0 4px 20px rgba(24, 119, 242, 0.3);
+        }
+        
+        .logo {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        h1 {
+            font-size: 1.8em;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            font-size: 0.95em;
+            opacity: 0.9;
+            margin-bottom: 16px;
+        }
+        
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+        
+        .card-title {
+            font-size: 1.3em;
+            margin-bottom: 16px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-title i {
+            color: var(--primary);
+        }
+        
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.95em;
+        }
+        
+        .input-help {
+            font-size: 0.85em;
+            color: var(--gray);
+            margin-top: 4px;
+            display: block;
+        }
+        
+        textarea, input, select {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 16px;
+            background: white;
+            transition: all 0.3s;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        
+        textarea:focus, input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(24, 119, 242, 0.1);
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        
+        /* Reaction Buttons */
+        .reaction-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .reaction-btn {
+            padding: 14px 8px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+            font-size: 1.4em;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .reaction-btn span {
+            font-size: 0.75em;
+            color: var(--gray);
+            margin-top: 4px;
+        }
+        
+        .reaction-btn:hover, .reaction-btn.active {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(24, 119, 242, 0.2);
+        }
+        
+        .reaction-btn.active span {
+            color: white;
+        }
+        
+        /* Action Buttons */
+        .btn {
+            padding: 16px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            -webkit-touch-callout: none;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:active {
+            background: var(--primary-dark);
+            transform: scale(0.98);
+        }
+        
+        .btn-success {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        /* Loading */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 30px 20px;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(24, 119, 242, 0.1);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Results */
+        .results-container {
+            margin-top: 20px;
+        }
+        
+        .result-card {
+            background: white;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 15px;
+            border-left: 5px solid var(--primary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .result-success {
+            border-left-color: var(--secondary);
+            background: #f0fff4;
+        }
+        
+        .result-error {
+            border-left-color: var(--danger);
+            background: #fff5f5;
+        }
+        
+        .result-info {
+            border-left-color: var(--warning);
+            background: #fffaf0;
+        }
+        
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+        
+        .stat-number {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.85em;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 24px 16px;
+            color: var(--gray);
+            font-size: 0.85em;
+            margin-top: 30px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .disclaimer {
+            background: #fff8e1;
+            border-left: 4px solid #ffb300;
+            padding: 14px;
+            margin: 20px 0;
+            border-radius: 10px;
+            font-size: 0.9em;
+        }
+        
+        /* Mobile Optimizations */
+        @media (max-width: 480px) {
+            .container {
+                padding: 12px;
+            }
+            
+            .header {
+                padding: 20px 12px;
+                margin: -12px -12px 20px -12px;
+            }
+            
+            h1 {
+                font-size: 1.6em;
+            }
+            
+            .card {
+                padding: 16px;
+            }
+            
+            .reaction-buttons {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .reaction-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --dark: #e4e6eb;
+                --light: #18191a;
+                --card-bg: #242526;
+                --border: #3a3b3c;
+                --gray: #b0b3b8;
+            }
+            
+            textarea, input, select {
+                background: #3a3b3c;
+                color: #e4e6eb;
+                border-color: #4a4b4c;
+            }
+        }
+        
+        /* Prevent text selection on buttons */
+        .noselect {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-bolt"></i>
+            </div>
+            <h1 class="noselect">React Boost Pro</h1>
+            <p class="subtitle noselect">Real Facebook Reactions • Mobile Optimized</p>
+        </header>
+        
+        <!-- Configuration Card -->
+        <div class="card">
+            <h3 class="card-title noselect">
+                <i class="fas fa-cogs"></i> Configuration
+            </h3>
+            
+            <div class="form-group">
+                <label for="cookies" class="noselect">
+                    <i class="fas fa-cookie-bite"></i> Facebook Cookies
+                </label>
+                <textarea 
+                    id="cookies" 
+                    placeholder="Paste your Facebook cookies here...
+Example: c_user=123456789;xs=29%3Aabc123def456;fr=0xyz789..."
+                    spellcheck="false"
+                ></textarea>
+                <small class="input-help noselect">
+                    Get cookies: Login to Facebook → Press F12 → Application → Cookies → facebook.com
+                </small>
+            </div>
+            
+            <div class="form-group">
+                <label for="postUrl" class="noselect">
+                    <i class="fas fa-link"></i> Post URL
+                </label>
+                <input 
+                    type="url" 
+                    id="postUrl" 
+                    placeholder="https://facebook.com/username/posts/123456789"
+                    inputmode="url"
+                >
+            </div>
+            
+            <div class="form-group">
+                <label class="noselect">
+                    <i class="fas fa-heart"></i> Select Reaction
+                </label>
+                <div class="reaction-buttons">
+                    <button class="reaction-btn" data-reaction="LIKE">
+                        👍 <span>Like</span>
+                    </button>
+                    <button class="reaction-btn active" data-reaction="LOVE">
+                        ❤️ <span>Love</span>
+                    </button>
+                    <button class="reaction-btn" data-reaction="CARE">
+                        🥰 <span>Care</span>
+                    </button>
+                    <button class="reaction-btn" data-reaction="HAHA">
+                        😆 <span>Haha</span>
+                    </button>
+                    <button class="reaction-btn" data-reaction="WOW">
+                        😯 <span>Wow</span>
+                    </button>
+                    <button class="reaction-btn" data-reaction="SAD">
+                        😢 <span>Sad</span>
+                    </button>
+                    <button class="reaction-btn" data-reaction="ANGRY">
+                        😠 <span>Angry</span>
+                    </button>
+                    <button class="reaction-btn" data-reaction="LIKE">
+                        🔄 <span>Random</span>
+                    </button>
+                </div>
+                <select id="reactionType" style="display: none;">
+                    <option value="LIKE">Like</option>
+                    <option value="LOVE" selected>Love</option>
+                    <option value="CARE">Care</option>
+                    <option value="HAHA">Haha</option>
+                    <option value="WOW">Wow</option>
+                    <option value="SAD">Sad</option>
+                    <option value="ANGRY">Angry</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="delay" class="noselect">
+                    <i class="fas fa-clock"></i> Delay (seconds)
+                </label>
+                <input 
+                    type="range" 
+                    id="delay" 
+                    min="2" 
+                    max="10" 
+                    value="3"
+                >
+                <span id="delayValue" class="noselect">3 seconds</span>
+            </div>
+            
+            <button id="sendReact" class="btn btn-primary noselect">
+                <i class="fas fa-paper-plane"></i> Send Real Reaction
+            </button>
+            
+            <button id="testApi" class="btn btn-success" style="margin-top: 10px;">
+                <i class="fas fa-vial"></i> Test Connection
+            </button>
+        </div>
+        
+        <!-- Loading Indicator -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <h3 class="noselect">Sending Real Reaction...</h3>
+            <p class="noselect">Opening browser, logging in, and interacting with Facebook...</p>
+            <p class="noselect" style="font-size: 0.9em; color: var(--gray);">
+                This may take 10-20 seconds
+            </p>
+        </div>
+        
+        <!-- Results Card -->
+        <div class="card">
+            <h3 class="card-title noselect">
+                <i class="fas fa-chart-line"></i> Results & Logs
+            </h3>
+            
+            <div id="resultsContainer" class="results-container">
+                <div class="result-card result-info">
+                    <h4 class="noselect"><i class="fas fa-info-circle"></i> Ready to Send</h4>
+                    <p class="noselect">Configure settings above and click "Send Real Reaction"</p>
+                </div>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number noselect" id="totalReactions">0</div>
+                    <div class="stat-label noselect">Total Reactions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number noselect" id="successRate">100%</div>
+                    <div class="stat-label noselect">Success Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number noselect" id="lastTime">--:--</div>
+                    <div class="stat-label noselect">Last Activity</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number noselect" id="status">🟢</div>
+                    <div class="stat-label noselect">Status</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Disclaimer -->
+        <div class="disclaimer noselect">
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>Important Notice:</strong> This tool is for educational purposes only. 
+            Use responsibly and comply with Facebook's Terms of Service. 
+            Do not spam reactions.
+        </div>
+        
+        <!-- Footer -->
+        <footer class="noselect">
+            <p>React Boost Pro v2.0 • Real Browser Automation</p>
+            <p>For educational purposes only • Use responsibly</p>
+            <p style="margin-top: 10px; font-size: 0.8em;">
+                <i class="fas fa-mobile-alt"></i> Mobile Optimized • 
+                <i class="fas fa-bolt"></i> Fast • 
+                <i class="fas fa-check-circle"></i> Reliable
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Global variables
+        let selectedReaction = 'LOVE';
+        let totalReactions = 0;
+        let successCount = 0;
+        let isProcessing = false;
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up reaction buttons
+            setupReactionButtons();
+            
+            // Set up delay slider
+            setupDelaySlider();
+            
+            // Set up action buttons
+            setupActionButtons();
+            
+            // Check API status
+            checkApiStatus();
+            
+            // Update stats display
+            updateStats();
+            
+            // Focus on cookies textarea
+            document.getElementById('cookies').focus();
+        });
+        
+        // Set up reaction buttons
+        function setupReactionButtons() {
+            const buttons = document.querySelectorAll('.reaction-btn');
+            
+            buttons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    if (isProcessing) return;
+                    
+                    // Remove active class from all buttons
+                    buttons.forEach(b => b.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Update selected reaction
+                    selectedReaction = this.dataset.reaction;
+                    
+                    // Update hidden select
+                    document.getElementById('reactionType').value = selectedReaction;
+                    
+                    // Vibrate on mobile (if supported)
+                    if (navigator.vibrate) {
+                        navigator.vibrate(50);
+                    }
+                });
+            });
+        }
+        
+        // Set up delay slider
+        function setupDelaySlider() {
+            const delaySlider = document.getElementById('delay');
+            const delayValue = document.getElementById('delayValue');
+            
+            delaySlider.addEventListener('input', function() {
+                delayValue.textContent = `${this.value} seconds`;
+            });
+            
+            // Add touch events for better mobile experience
+            delaySlider.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(1.1)';
+            });
+            
+            delaySlider.addEventListener('touchend', function() {
+                this.style.transform = 'scale(1)';
+            });
+        }
+        
+        // Set up action buttons
+        function setupActionButtons() {
+            // Send reaction button
+            document.getElementById('sendReact').addEventListener('click', sendSingleReaction);
+            
+            // Test API button
+            document.getElementById('testApi').addEventListener('click', testApiConnection);
+            
+            // Add touch feedback for buttons
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(btn => {
+                btn.addEventListener('touchstart', function() {
+                    this.style.opacity = '0.8';
+                });
+                
+                btn.addEventListener('touchend', function() {
+                    this.style.opacity = '1';
+                });
+            });
+        }
+        
+        // Send single reaction
+        async function sendSingleReaction() {
+            if (isProcessing) return;
+            
+            const cookies = document.getElementById('cookies').value.trim();
+            const postUrl = document.getElementById('postUrl').value.trim();
+            const delaySeconds = document.getElementById('delay').value;
+            
+            // Validation
+            if (!cookies) {
+                showResult('error', 'Please enter Facebook cookies');
+                vibrateError();
+                return;
+            }
+            
+            if (!postUrl.includes('facebook.com')) {
+                showResult('error', 'Please enter a valid Facebook post URL');
+                vibrateError();
+                return;
+            }
+            
+            // Start processing
+            isProcessing = true;
+            document.getElementById('sendReact').disabled = true;
+            document.getElementById('loading').style.display = 'block';
+            
+            // Update status
+            document.getElementById('status').textContent = '🟡';
+            
+            try {
+                // Show sending message
+                showResult('info', `Sending ${selectedReaction} reaction...`);
+                
+                // Send request to backend
+                const response = await fetch('/api/react', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        cookies: cookies,
+                        post_url: postUrl,
+                        reaction_type: selectedReaction,
+                        delay_ms: delaySeconds * 1000
+                    })
+                });
+                
+                const result = await response.json();
+                
+                // Hide loading
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('sendReact').disabled = false;
+                isProcessing = false;
+                
+                // Update stats
+                totalReactions++;
+                if (result.success) {
+                    successCount++;
+                    
+                    // Show success result
+                    showResult('success', 
+                        `${result.message}<br>
+                        <small>Reaction ID: ${result.reaction_id}</small><br>
+                        <small>Time: ${new Date().toLocaleTimeString()}</small>`);
+                    
+                    // Success vibration
+                    if (navigator.vibrate) {
+                        navigator.vibrate([100, 50, 100]);
+                    }
+                } else {
+                    // Show error result
+                    showResult('error', 
+                        `${result.message || 'Failed to send reaction'}<br>
+                        <small>Error: ${result.error || 'Unknown error'}</small>`);
+                    
+                    // Error vibration
+                    vibrateError();
+                }
+                
+                // Update display
+                updateStats();
+                document.getElementById('lastTime').textContent = 
+                    new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                document.getElementById('status').textContent = '🟢';
+                
+            } catch (error) {
+                // Network error
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('sendReact').disabled = false;
+                isProcessing = false;
+                
+                showResult('error', `Network error: ${error.message}`);
+                vibrateError();
+                
+                document.getElementById('status').textContent = '🔴';
+            }
+        }
+        
+        // Test API connection
+        async function testApiConnection() {
+            try {
+                showResult('info', 'Testing API connection...');
+                
+                const response = await fetch('/api/health');
+                const result = await response.json();
+                
+                showResult('success', 
+                    `API Status: ${result.status}<br>
+                    <small>Version: ${result.version}</small><br>
+                    <small>Service: ${result.service}</small>`);
+                    
+            } catch (error) {
+                showResult('error', `API test failed: ${error.message}`);
+            }
+        }
+        
+        // Check API status on load
+        async function checkApiStatus() {
+            try {
+                const response = await fetch('/api/health');
+                if (response.ok) {
+                    console.log('✅ API is online');
+                }
+            } catch (error) {
+                console.log('⚠️ API check failed');
+            }
+        }
+        
+        // Show result in UI
+        function showResult(type, message) {
+            const resultsContainer = document.getElementById('resultsContainer');
+            const resultCard = document.createElement('div');
+            
+            resultCard.className = `result-card result-${type}`;
+            resultCard.innerHTML = `
+                <h4 class="noselect">
+                    <i class="fas fa-${getIconForType(type)}"></i> 
+                    ${type.charAt(0).toUpperCase() + type.slice(1)}
+                </h4>
+                <p class="noselect">${message}</p>
+                <small class="noselect">${new Date().toLocaleTimeString()}</small>
+            `;
+            
+            // Add to top
+            resultsContainer.insertBefore(resultCard, resultsContainer.firstChild);
+            
+            // Keep only last 5 results
+            const allResults = resultsContainer.querySelectorAll('.result-card');
+            if (allResults.length > 5) {
+                allResults[allResults.length - 1].remove();
+            }
+            
+            // Auto-scroll to top
+            resultsContainer.scrollTop = 0;
+        }
+        
+        // Get icon for result type
+        function getIconForType(type) {
+            switch(type) {
+                case 'success': return 'check-circle';
+                case 'error': return 'exclamation-circle';
+                case 'warning': return 'exclamation-triangle';
+                default: return 'info-circle';
+            }
+        }
+        
+        // Update statistics display
+        function updateStats() {
+            document.getElementById('totalReactions').textContent = totalReactions;
+            
+            const successRate = totalReactions > 0 ? 
+                Math.round((successCount / totalReactions) * 100) : 100;
+            document.getElementById('successRate').textContent = `${successRate}%`;
+        }
+        
+        // Vibration for errors
+        function vibrateError() {
+            if (navigator.vibrate) {
+                navigator.vibrate([200, 100, 200]);
+            }
+        }
+        
+        // Handle offline/online events
+        window.addEventListener('online', function() {
+            showResult('success', 'Connection restored');
+            document.getElementById('status').textContent = '🟢';
+        });
+        
+        window.addEventListener('offline', function() {
+            showResult('error', 'Connection lost');
+            document.getElementById('status').textContent = '🔴';
+        });
+        
+        // Prevent form submission on Enter
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>
